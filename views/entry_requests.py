@@ -93,19 +93,14 @@ def delete_entry(id):
 def search_entries(searchedTerm):
     """FN to search the entries records for LIKE and CONTAIN"""
     with sqlite3.connect("./dailyjournal.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-
         db_cursor.execute("""
         SELECT *
         FROM entries AS e
-        WHERE e.entry = ?
-            OR e.concept = ?
-        """, (id, ))
-        
-        
-        
-        # LIKE "%{searchedTerm}%"
-        # LIKE term "%{searchedTerm}%"
+        WHERE e.entry LIKE ?
+            OR e.concept LIKE ?
+        """, ("%" + searchedTerm +  "%", "%" + searchedTerm +  "%" ))
         
         # Initialize an empty list to hold all entries representations
         entries = []
@@ -115,7 +110,7 @@ def search_entries(searchedTerm):
         for row in dataset:
             entry = Entry(row["id"], row["date"], row["entry"],
                           row["concept"], row["moodId"])
-        # Add dictionary represetnation of the entry to the list
+        # Add dictionary representation of the entry to the list
         entries.append(entry.__dict__)
     return json.dumps(entries)
 

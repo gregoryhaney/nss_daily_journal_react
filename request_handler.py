@@ -7,7 +7,7 @@ from views.mood_requests import get_all_moods, get_single_mood
 
 
 # Here's a class. It inherits from another class.
-# For now, think of a class as a container for functions that
+# Think of a class as a container for functions that
 # work together for a common purpose. In this case, that
 # common purpose is to respond to HTTP requests from a client.
 class HandleRequests(BaseHTTPRequestHandler):
@@ -18,17 +18,17 @@ class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
         """Controls the functionality of any GET, PUT, POST, DELETE requests to the server
         """
-        path_params = path.split("/")
-        resource = path_params[1]
+        path_params = path.split("/") # splits on / essentially removing it, leaving two elements
+        resource = path_params[1]  # index 0 is empty, so start w/ index 1
 
         # Check if there is a query string parameter
-        if "?" in resource:
+        if "?" in resource:       # ex:  /entries?q=learning
 
-            param = resource.split("?")[1]
-            resource = resource.split("?")[0]
-            pair = param.split("=")
-            key = pair[0]
-            value = pair[1]
+            param = resource.split("?")[1]   # split on ? into two elements: q and searchstring
+            resource = resource.split("?")[0]   # index 0 is the q
+            pair = param.split("=")           # split on equal: [ 'q', 'searchstring' ]
+            key = pair[0]              # KEY is at index 0
+            value = pair[1]            # VALUE is at index 1
 
             return ( resource, key, value )
 
@@ -37,11 +37,11 @@ class HandleRequests(BaseHTTPRequestHandler):
             id = None
 
             try:
-                id = int(path_params[2])
-            except IndexError:
-                pass
-            except ValueError:
-                pass
+                id = int(path_params[2]) # TRY to do this action (convert index two of
+            except IndexError:           # path_params into INT) and if you (Python) encounter
+                pass                     # an "IndexError", ignore it and don't stop the program
+            except ValueError:           # or if you (Python) encounter a "ValueError",
+                pass                     # ignore it and don't stop the program
 
             return (resource, id)
 
@@ -112,16 +112,14 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # This weird code sends a response back to the client
         #self.wfile.write(f"{response}".encode())
-        
-        if len(parsed) == 1:
-            ( value ) = parsed
-            if value is not None:
-                response = f"{search_entries}"
-            else: response = f"Nothing found for your search of: {value}"
+          
+        if len(parsed) == 3:
+            ( resource, key, value ) = parsed
+            if (key == 'q'):
+                response = search_entries(value)      
+                          
         self.wfile.write(f"{response}".encode())
         
-        
-
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
     def do_POST(self):
