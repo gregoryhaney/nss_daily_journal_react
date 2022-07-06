@@ -4,7 +4,7 @@ from models.mood import Mood
 
 
 def get_all_moods():
-    """function to fetch all records from the moods table"""
+    """a FN to fetch all records from the moods table"""
     with sqlite3.connect("./dailyjournal.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -38,7 +38,7 @@ def get_all_moods():
         return json.dumps(moods)
 
 def get_single_mood(id):
-    """FN to fetch a single entry based on provided id"""
+    """a FN to fetch a single entry based on provided id"""
     with sqlite3.connect("./dailyjournal.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()

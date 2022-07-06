@@ -4,11 +4,11 @@ from models.entry import Entry
 from models.mood import Mood
 
 def get_all_entries():
-    """function to fetch all records from the entries table"""
+    """the FN to fetch all records from the entries table"""
     with sqlite3.connect("./dailyjournal.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-        # Write the SQL query to grab to desired information
+        # SQL query to grab to desired information
         db_cursor.execute("""
         SELECT
             e.id,
@@ -23,17 +23,17 @@ def get_all_entries():
         """)
         # Initialize empty list to hold all entries representations
         entries = []
-        # Convert rows of data into a Python list
+        # Convert SQLite rows of DB data into a Python list of dictionaries
         dataset = db_cursor.fetchall()
         # Iterate list of data returned from DB
         for row in dataset:
-            # Create an entries instance from the current row.
+            # Create an 'entries' instance (Object) from the current row.
             # DB files are in exact order of the parameters defined
-            # in the Entries class.
+            # in the 'Entries' class.
             entry = Entry(row['id'], row['date'], row['entry'],
-                            row['concept'], row['moodId'])            
-            # Create mood instance from the current row.
-            mood = Mood(row["id"], row["label"])           
+                            row['concept'], row['moodId'])
+            # Create 'mood' instance from the current row.
+            mood = Mood(row['id'], row['label'])
             # Add dict representation of the mood to the entry
             entry.mood = mood.__dict__
             
@@ -41,7 +41,9 @@ def get_all_entries():
             entries.append(entry.__dict__)
             
       
-        # User 'json' package to properly serialize list as JSON
+        # Use 'json' package to properly serialize list as JSON
+        # stringifies the dictionaries and makes it JSON, which is
+        # what JavaScript can use to render it in the browser.
         return json.dumps(entries)
 
 def get_single_entry(id):
@@ -71,10 +73,10 @@ def get_single_entry(id):
 
         # Create an entries instance from the current row
         entry = Entry(data['id'], data['date'], data['entry'],
-                            data['concept'], data['moodId'])        
-        mood = Mood(data["id"], data["label"])        
+                            data['concept'], data['moodId'])
+        mood = Mood(data['id'], data['label'])        
         # Add dict representation of the mood to the entry
-        entry.mood = mood.__dict__        
+        entry.mood = mood.__dict__
         # Add dict representation of the entry to the list
         entries.append(entry.__dict__)
 
@@ -91,7 +93,7 @@ def delete_entry(id):
         """, (id, ))
 
 def search_entries(searchedTerm):
-    """FN to search the entries records for LIKE and CONTAIN"""
+    """FN to search the entries records for LIKE """
     with sqlite3.connect("./dailyjournal.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -106,10 +108,10 @@ def search_entries(searchedTerm):
         entries = []
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
-        # Iterate the list of data returned from the DB
+        # Iterate the list of data returned from DB
         for row in dataset:
-            entry = Entry(row["id"], row["date"], row["entry"],
-                          row["concept"], row["moodId"])
+            entry = Entry(row['id'], row['date'], row['entry'],
+                          row['concept'], row['moodId'])
         # Add dictionary representation of the entry to the list
         entries.append(entry.__dict__)
     return json.dumps(entries)

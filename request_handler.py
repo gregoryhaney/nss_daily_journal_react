@@ -16,9 +16,8 @@ class HandleRequests(BaseHTTPRequestHandler):
     """Controls the functionality of any GET, PUT, POST, DELETE requests to the server
     """
     def parse_url(self, path):
-        """Controls the functionality of any GET, PUT, POST, DELETE requests to the server
-        """
-        path_params = path.split("/") # splits on / essentially removing it, leaving two elements
+        """Used for the search bar function in the app"""
+        path_params = path.split("/") # splits on / basically removing it, leaving two elements
         resource = path_params[1]  # index 0 is empty, so start w/ index 1
 
         # Check if there is a query string parameter
@@ -38,16 +37,16 @@ class HandleRequests(BaseHTTPRequestHandler):
 
             try:
                 id = int(path_params[2]) # TRY to do this action (convert index two of
-            except IndexError:           # path_params into INT) and if you (Python) encounter
+            except IndexError:           # path_params into INT) and if Python encounters
                 pass                     # an "IndexError", ignore it and don't stop the program
-            except ValueError:           # or if you (Python) encounter a "ValueError",
+            except ValueError:           # or if Python encounters a "ValueError",
                 pass                     # ignore it and don't stop the program
 
             return (resource, id)
 
     def do_DELETE(self):
         """Handles the DELETE requests to server"""
-        # Set a 204 response code
+        # Set an HTTP 204 response code
         self._set_headers(204)
 
         # Parse the URL
@@ -60,7 +59,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Encode the new entry and send in response
         self.wfile.write("".encode())
 
-    # Here's a class function
+    # A class FN
     def _set_headers(self, status):
         # Notice this Docstring also includes information about the arguments passed to the function
         """Sets the status code, Content-Type and Access-Control-Allow-Origin
@@ -84,19 +83,17 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
-    # Here's a method on the class that overrides the parent's method.
+    # Method on the class that overrides the parent's method.
     # It handles any GET request.
     def do_GET(self):
-        """Handles GET requests to the server
-        """
-        # Set the response code to 'Ok'
+        """Handles GET requests to the server"""
+        # Set the response code to 'Ok' [HTTP 200]
         self._set_headers(200)
 
-        response = ""
+        response = ""            # initialize the 'response' variable
         # Parse URL and store entire tuple in a variable
         parsed = self.parse_url(self.path)
-        # Response from parse_url() is a tuple with two items
-        # in it
+        # Response from parse_url() is a tuple containing two items
         if len(parsed) == 2:
             ( resource, id ) = parsed
             if resource == "entries":
@@ -110,9 +107,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f"{get_all_moods()}"
 
-        # This weird code sends a response back to the client
-        #self.wfile.write(f"{response}".encode())
-          
         if len(parsed) == 3:
             ( resource, key, value ) = parsed
             if (key == 'q'):
@@ -120,11 +114,10 @@ class HandleRequests(BaseHTTPRequestHandler):
                           
         self.wfile.write(f"{response}".encode())
         
-    # Here's a method on the class that overrides the parent's method.
+    # Method on the class that overrides the parent's method.
     # It handles any POST request.
     def do_POST(self):
-        """Handles POST requests to the server
-        """
+        """Handles POST requests to the server"""
         # Set response code to 'Created'
         self._set_headers(201)
 
@@ -144,11 +137,11 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "entries":
             new_entry = create_entry(post_body)
 
-        # Encode the new animal and send in response
+        # Encode the new animal and send in response to the client, in JSON format
         self.wfile.write(f"{new_entry}".encode())
 
 
-    # Here's a method on the class that overrides the parent's method.
+    # Method on the class that overrides the parent's method.
     # It handles any PUT request.
 
     def do_PUT(self):
@@ -174,7 +167,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write("".encode())
 
 
-# This function is not inside the class. It is the starting
+# This FN is not inside the class. It is the starting
 # point of this application.
 def main():
     """Starts the server on port 8085 using the HandleRequests class
